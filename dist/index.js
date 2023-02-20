@@ -9807,7 +9807,7 @@ async function run() {
     core.info((new Date()).toTimeString());
 
     core.setOutput('time', new Date().toTimeString());
-    console.log(github.context)
+    console.log(JSON.stringify(github.context,null,4))
   } catch (error) {
     core.setFailed(error.message);
   }
