@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const github = require('@actions/github');
 const wait = require('./wait');
 
 
@@ -13,6 +14,7 @@ async function run() {
     core.info((new Date()).toTimeString());
 
     core.setOutput('time', new Date().toTimeString());
+    console.log(github.context)
   } catch (error) {
     core.setFailed(error.message);
   }
