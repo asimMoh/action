@@ -9630,6 +9630,14 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 
 /***/ }),
 
+/***/ 306:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"javascript-action","version":"1.0.0","description":"JavaScript Action Template","main":"index.js","scripts":{"lint":"eslint .","prepare":"ncc build index.js -o dist --source-map --license licenses.txt","test":"jest","all":"npm run lint && npm run prepare && npm run test"},"repository":{"type":"git","url":"git+https://github.com/actions/javascript-action.git"},"keywords":["GitHub","Actions","JavaScript"],"author":"","license":"MIT","bugs":{"url":"https://github.com/actions/javascript-action/issues"},"homepage":"https://github.com/actions/javascript-action#readme","dependencies":{"@actions/core":"^1.10.0","@actions/github":"^5.1.1"},"devDependencies":{"@vercel/ncc":"^0.31.1","eslint":"^8.0.0","jest":"^27.2.5"}}');
+
+/***/ }),
+
 /***/ 2357:
 /***/ ((module) => {
 
@@ -9794,6 +9802,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const wait = __nccwpck_require__(4258);
+const fs = __nccwpck_require__(5747);
 
 
 // most @actions toolkit packages have async methods
@@ -9801,18 +9810,37 @@ async function run() {
   try {
     const ms = core.getInput('milliseconds');
     core.info(`Waiting ${ms} milliseconds ...`);
-
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    core.debug((new Date()).toTimeString());
     await wait(parseInt(ms));
     core.info((new Date()).toTimeString());
 
     core.setOutput('time', new Date().toTimeString());
+    increment();
     console.log(JSON.stringify(github.context,null,4))
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
+
+function increment(){
+  const pkg = __nccwpck_require__(306);
+
+  const [major = 0, minor = 0, patch = 0] = pkg.version
+      .split(".")
+      .map((n) => parseInt(n, 10));
+  const formatter = new Intl.NumberFormat("en-us", { minimumIntegerDigits: 2 });
+  const version =  [major, minor, formatter.format(patch + 1)].join(".");
+  fs.writeFileSync(
+      "./package.json",
+      JSON.stringify({
+        ...pkg,
+        version
+      }, null, 4)
+  );
+  console.log("Incremented to " ,version);
+  return version;
+}
 run();
 
 })();
